@@ -18,6 +18,47 @@ void display_prompt(void)
 	write(STDOUT_FILENO, prompt, sizeof(prompt) - 1);
 }
 
+/**
+ * exec_command - Execute a shell command
+ * @command: The command to be executed.
+ */
+void exec_command(char *command)
+{
+	pid_t pid;
+	int status;
+
+	pid = fork();
+	if (pid == 0)
+	{
+		char *args[2];
+
+		args[0] = command;
+		args[1] = NULL;
+
+		if (execvp(command, args) == -1)
+		{
+			char error[] = "simple_shell: Command not found\n";
+
+			write(STDERR_FILENO, error, sizeof(error) - 1);
+		}
+		exit(EXIT_FAILURE);
+	}
+	else if (pid < 0)
+	{
+		char err[] = "simple_shell: Fork failed\n";
+
+		write(STDERR_FILENO, err, sizeof(err) - 1);
+	}
+	else
+	{
+		do
+
+		{
+			waitpid(pid, &status, WUNTRACED);
+		} while (!WIFEXITED(status) && !WIFSIGNALED(status));
+	}
+}
+
 
 /**
  * execute_command - Executes a given command.

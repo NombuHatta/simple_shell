@@ -18,6 +18,48 @@ void display_prompt(void)
 	write(STDOUT_FILENO, prompt, sizeof(prompt) - 1);
 }
 
+
+/**
+ * exec_command - Execute a shell command
+ * @command: The command to be executed.
+ */
+void exec_command(char *command)
+{
+	pid_t pid;
+	int status;
+
+	pid = fork();
+	if (pid == 0)
+	{
+		char *args[2];
+
+		args[0] = command;
+		args[1] = NULL;
+
+		if (execvp(command, args) == -1)
+		{
+			char error[] = "simple_shell: Command not found\n";
+
+			write(STDERR_FILENO, error, sizeof(error) - 1);
+		}
+		exit(EXIT_FAILURE);
+	}
+	else if (pid < 0)
+	{
+		char err[] = "simple_shell: Fork failed\n";
+
+		write(STDERR_FILENO, err, sizeof(err) - 1);
+	}
+	else
+	{
+		do
+
+		{
+			waitpid(pid, &status, WUNTRACED);
+		} while (!WIFEXITED(status) && !WIFSIGNALED(status));
+	}
+}
+
 /**
  * execute_command - Executes a given command.
  * @input: The input string containing the command.
@@ -64,38 +106,4 @@ void execute_command(char *input)
 			waitpid(pid, &status, WUNTRACED);
 		} while (!WIFEXITED(status) && !WIFSIGNALED(status));
 	}
-}
-
-/**
- * main - Entry point of the shell program
- * Return: Always 0 (Success)
- */
-int main(void)
-{
-	char input[MAX_INPUT_SIZE];
-	size_t len = strlen(input);
-
-	while (1)
-	{
-		display_prompt();
-
-		if (fgets(input, MAX_INPUT_SIZE, stdin) == NULL)
-		{
-			write(STDOUT_FILENO, "\n", 1);
-			break;
-		}
-
-		if (len > 0 && input[len - 1] == '\n')
-		{
-			input[len - 1] = '\0';
-		}
-
-		if (strlen(input) == 0)
-		{
-			continue;
-		}
-
-		execute_command(input);
-	}
-	return (0);
 }

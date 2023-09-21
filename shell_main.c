@@ -13,6 +13,7 @@
 int main(void)
 {
 	char input[MAX_INPUT_SIZE];
+	char *path = getenv("PATH");
 
 	while (1)
 	{
@@ -24,7 +25,7 @@ int main(void)
 			break;
 		}
 
-		execute_command(input);
+		find_and_execute(input, path);
 	}
 	return (0);
 }

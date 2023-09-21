@@ -13,7 +13,6 @@
 int main(void)
 {
 	char input[MAX_INPUT_SIZE];
-	size_t len = strlen(input);
 
 	while (1)
 	{
@@ -23,14 +22,6 @@ int main(void)
 		{
 			write(STDOUT_FILENO, "\n", 1);
 			break;
-		}
-		if (len > 0 && input[len - 1] == '\n')
-		{
-			input[len - 1] = '\0';
-		}
-		if (strlen(input) == 0)
-		{
-			continue;
 		}
 
 		execute_command(input);

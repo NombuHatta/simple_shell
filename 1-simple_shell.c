@@ -66,25 +66,17 @@ void exec_command(char *command)
  */
 void execute_command(char *input)
 {
-	char *token = strtok(input, " ");
-	char *command = token, *args[MAX_INPUT_SIZE];
-	int arg_count = 0, status;
+	size_t len = strlen(input);
 	pid_t pid;
+	int status;
 
-	if (command == NULL)
-		return;
-	while (token != NULL)
-	{
-		args[arg_count] = token;
-		arg_count++;
-		token = strtok(NULL, " ");
-	}
-	args[arg_count] = NULL;
+	if (len > 0 && input[len - 1] == '\n')
+		input[len - 1] = '\0';
 
 	pid = fork();
 	if (pid == 0)
 	{
-		if (execvp(command, args) == -1)
+		if (execlp(input, input, NULL) == -1)
 		{
 			char error[] = "Shell: Command not found\n";
 
